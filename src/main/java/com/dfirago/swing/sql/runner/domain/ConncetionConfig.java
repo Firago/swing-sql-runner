@@ -1,12 +1,17 @@
 package com.dfirago.swing.sql.runner.domain;
 
+import com.dfirago.swing.sql.runner.validation.Required;
+
 /**
  * @author diankasol
  */
 public class ConncetionConfig implements Restorable {
 
+    @Required("driver")
     private String driver;
+    @Required("URL")
     private String url;
+    @Required("username")
     private String login;
     private String password;
 

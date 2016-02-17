@@ -1,5 +1,7 @@
 package com.dfirago.swing.sql.runner.domain;
 
+import com.dfirago.swing.sql.runner.validation.Required;
+
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -9,7 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class QueryConfig implements Restorable {
 
     private LinkedBlockingQueue<String> queries;
-    private int batchSize;
+    @Required("batch size")
+    private Integer batchSize;
 
     public LinkedBlockingQueue<String> getQueries() {
         return queries;
@@ -19,11 +22,11 @@ public class QueryConfig implements Restorable {
         this.queries = queries;
     }
 
-    public int getBatchSize() {
+    public Integer getBatchSize() {
         return batchSize;
     }
 
-    public void setBatchSize(int batchSize) {
+    public void setBatchSize(Integer batchSize) {
         this.batchSize = batchSize;
     }
 

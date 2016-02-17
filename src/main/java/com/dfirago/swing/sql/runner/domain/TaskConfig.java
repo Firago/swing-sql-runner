@@ -1,18 +1,21 @@
 package com.dfirago.swing.sql.runner.domain;
 
+import com.dfirago.swing.sql.runner.validation.Required;
+
 /**
  *
  * @author diankasol
  */
 public class TaskConfig implements Restorable {
 
-    private long interval;
+    @Required("interval")
+    private Long interval;
 
-    public long getInterval() {
+    public Long getInterval() {
         return interval;
     }
 
-    public void setInterval(long interval) {
+    public void setInterval(Long interval) {
         this.interval = interval;
     }
 
