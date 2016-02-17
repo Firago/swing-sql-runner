@@ -1,7 +1,6 @@
 package com.dfirago.swing.sql.runner.domain;
 
 /**
- *
  * @author diankasol
  */
 public class ConncetionConfig implements Restorable {
@@ -10,6 +9,13 @@ public class ConncetionConfig implements Restorable {
     private String url;
     private String login;
     private String password;
+
+    public ConncetionConfig(String driver, String url, String login, String password) {
+        this.driver = driver;
+        this.url = url;
+        this.login = login;
+        this.password = password;
+    }
 
     public String getDriver() {
         return driver;
