@@ -1,6 +1,6 @@
 package com.dfirago.swing.sql.runner.services;
 
-import com.dfirago.swing.sql.runner.domain.ConncetionConfig;
+import com.dfirago.swing.sql.runner.domain.ConnectionConfig;
 import com.dfirago.swing.sql.runner.exceptions.DataSourceUndefinedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class DatabaseService {
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
 
-    public void register(ConncetionConfig config) {
+    public void register(ConnectionConfig config) {
         register(createDataSource(config));
     }
 
@@ -37,10 +37,10 @@ public class DatabaseService {
     }
 
     public boolean testConnection(String driver, String url, String login, String password) {
-        return testConnection(new ConncetionConfig(driver, url, login, password));
+        return testConnection(new ConnectionConfig(driver, url, login, password));
     }
 
-    public boolean testConnection(ConncetionConfig config) {
+    public boolean testConnection(ConnectionConfig config) {
         return testConnection(createDataSource(config));
     }
 
@@ -62,7 +62,7 @@ public class DatabaseService {
     }
 
 
-    private DataSource createDataSource(ConncetionConfig config) {
+    private DataSource createDataSource(ConnectionConfig config) {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName(config.getDriver());
         ds.setUrl(config.getUrl());
@@ -72,8 +72,8 @@ public class DatabaseService {
     }
 
     public void resetCredentials() {
-        ConncetionConfig dbConfig = ((ConncetionConfig) configurationService
-                .get(ConncetionConfig.class));
+        ConnectionConfig dbConfig = ((ConnectionConfig) configurationService
+                .get(ConnectionConfig.class));
         dbConfig.setLogin(null);
         dbConfig.setPassword(null);
         configurationService.save(dbConfig);

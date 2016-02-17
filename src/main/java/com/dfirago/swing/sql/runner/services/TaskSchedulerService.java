@@ -1,6 +1,6 @@
 package com.dfirago.swing.sql.runner.services;
 
-import com.dfirago.swing.sql.runner.domain.ConncetionConfig;
+import com.dfirago.swing.sql.runner.domain.ConnectionConfig;
 import com.dfirago.swing.sql.runner.domain.TaskConfig;
 import com.dfirago.swing.sql.runner.events.TaskFinishedEvent;
 import com.dfirago.swing.sql.runner.events.TaskPausedEvent;
@@ -45,7 +45,7 @@ public class TaskSchedulerService implements ApplicationListener<ContextClosedEv
 
     public void run() {
         databaseService.register(
-                (ConncetionConfig) configurationService.get(ConncetionConfig.class));
+                (ConnectionConfig) configurationService.get(ConnectionConfig.class));
         TaskConfig taskConfig = (TaskConfig) configurationService.get(TaskConfig.class);
         ScheduledFuture<?> pendingTask = taskScheduler
                 .scheduleWithFixedDelay(task, taskConfig.getInterval());

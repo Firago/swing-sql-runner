@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * @author dmfi
+ * @author diankasol
  */
 @Component
 @Scope("prototype")

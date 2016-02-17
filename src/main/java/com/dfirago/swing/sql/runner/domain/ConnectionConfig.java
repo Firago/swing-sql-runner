@@ -5,7 +5,7 @@ import com.dfirago.swing.sql.runner.validation.Required;
 /**
  * @author diankasol
  */
-public class ConncetionConfig implements Restorable {
+public class ConnectionConfig implements Restorable {
 
     @Required("driver")
     private String driver;
@@ -15,7 +15,10 @@ public class ConncetionConfig implements Restorable {
     private String login;
     private String password;
 
-    public ConncetionConfig(String driver, String url, String login, String password) {
+    public ConnectionConfig() {
+    }
+
+    public ConnectionConfig(String driver, String url, String login, String password) {
         this.driver = driver;
         this.url = url;
         this.login = login;
