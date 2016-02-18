@@ -8,10 +8,15 @@
     <version>0.1</version>
     <packaging>jar</packaging>
 
+    <repositories>
+        <repository>
+            <id>local-repo</id>
+            <url>file://${project.basedir}/lib</url>
+        </repository>
+    </repositories>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.resourceDirectory>${project.basedir}/src/main/resources</project.build.resourceDirectory>
-        <project.build.repository>${project.build.resourceDirectory}/repository</project.build.repository>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <spring.version>4.2.4.RELEASE</spring.version>
@@ -50,7 +55,6 @@
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
         </dependency>
-
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -72,30 +76,5 @@
             <version>${jsyntaxpane.version}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.build.repository}/jsyntaxpane-${jsyntaxpane.version}.jar</file>
-                            <groupId>com.google.code</groupId>
-                            <artifactId>jsyntaxpane</artifactId>
-                            <version>${jsyntaxpane.version}</version>
-                            <packaging>jar</packaging>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
