@@ -17,8 +17,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
         <spring.version>4.2.4.RELEASE</spring.version>
         <slf4j.version>1.7.13</slf4j.version>
         <logback.version>1.1.3</logback.version>
@@ -27,6 +27,7 @@
         <jsyntaxpane.version>0.9.5-b29</jsyntaxpane.version>
         <mysql.version>5.1.38</mysql.version>
         <postgresql.version>9.4.1207.jre6</postgresql.version>
+        <commons-codec.version>1.9</commons-codec.version>
     </properties>
 
     <dependencies>
@@ -74,6 +75,11 @@
             <groupId>com.google.code</groupId>
             <artifactId>jsyntaxpane</artifactId>
             <version>${jsyntaxpane.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
         </dependency>
     </dependencies>
 

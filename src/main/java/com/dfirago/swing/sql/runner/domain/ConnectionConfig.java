@@ -1,6 +1,10 @@
 package com.dfirago.swing.sql.runner.domain;
 
+import com.dfirago.swing.sql.runner.utils.PasswordDeserializer;
+import com.dfirago.swing.sql.runner.utils.PasswordSerializer;
 import com.dfirago.swing.sql.runner.validation.Required;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @author diankasol
@@ -13,6 +17,8 @@ public class ConnectionConfig implements Restorable {
     private String url;
     @Required("username")
     private String login;
+    @JsonSerialize(using = PasswordSerializer.class)
+    @JsonDeserialize(using = PasswordDeserializer.class)
     private String password;
 
     public ConnectionConfig() {
