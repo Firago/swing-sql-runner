@@ -48,7 +48,34 @@ public class MainFrame extends JFrame {
     private ConfigurationService configurationService;
     @Autowired
     private TaskSchedulerService taskSchedulerService;
-    private boolean paused;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel batchSizeLabel;
+    private javax.swing.JSpinner batchSizeSpinner;
+    private javax.swing.JButton chooseFileButton;
+    private javax.swing.JPanel configurationPanel;
+    private javax.swing.JPanel connectionPanel;
+    private javax.swing.JComboBox driverComboBox;
+    private javax.swing.JLabel driverLabel;
+    private javax.swing.JPanel editQueriesPanel;
+    private javax.swing.JFileChooser fileChooser;
+    private javax.swing.JTextField filePathField;
+    private javax.swing.JLabel filePathLabel;
+    private javax.swing.JLabel intervalLabel;
+    private javax.swing.JSpinner intervalSpinner;
+    private javax.swing.JPanel loadQueriesPanel;
+    private javax.swing.JTextField loginField;
+    private javax.swing.JProgressBar mainProgressBar;
+    private javax.swing.JPasswordField passwordField;
+    private javax.swing.JLabel passwordLabel;
+    private javax.swing.JPanel progressPanel;
+    private javax.swing.JEditorPane queriesEditorPane;
+    private javax.swing.JScrollPane queriesScrollPane;
+    private javax.swing.JButton runButton;
+    private javax.swing.JButton stopButton;
+    private javax.swing.JButton testConnectionButton;
+    private javax.swing.JTextField urlField;
+    private javax.swing.JLabel urlLabel;
+    private javax.swing.JLabel usernameLabel;
 
     @PostConstruct
     public void init() {
@@ -70,7 +97,7 @@ public class MainFrame extends JFrame {
         if (configurationService.hasConfig()) {
             int result = JOptionPane.showConfirmDialog(this, "Would you like to restore previous task?", "", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.OK_OPTION) {
-                taskSchedulerService.run();
+                restoreAll();
             } else {
                 configurationService.clear();
             }
@@ -86,6 +113,32 @@ public class MainFrame extends JFrame {
         if (dbConfig != null) {
             urlField.setText(dbConfig.getUrl());
             driverComboBox.setSelectedItem(dbConfig.getDriver());
+        }
+    }
+
+    private void restoreAll() {
+        ConnectionConfig dbConfig = (ConnectionConfig) configurationService.get(ConnectionConfig.class);
+        TaskConfig taskConfig = (TaskConfig) configurationService.get(TaskConfig.class);
+        QueryConfig queryConfig = (QueryConfig) configurationService.get(QueryConfig.class);
+        Progress progress = (Progress) configurationService.get(Progress.class);
+
+        if (dbConfig != null) {
+            urlField.setText(dbConfig.getUrl());
+            loginField.setText(dbConfig.getLogin());
+            driverComboBox.setSelectedItem(dbConfig.getDriver());
+        }
+
+        if (taskConfig != null) {
+            intervalSpinner.setValue(taskConfig.getInterval() / 1000);
+        }
+
+        if (queryConfig != null) {
+            batchSizeSpinner.setValue(queryConfig.getBatchSize());
+            loadQueriesFromConfig();
+        }
+
+        if (progress != null) {
+            mainProgressBar.setValue(progress.calculateRate());
         }
     }
 
@@ -402,31 +455,39 @@ public class MainFrame extends JFrame {
         }
     }//GEN-LAST:event_chooseFileButtonActionPerformed
 
-
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
         if (configurationService.hasConfig()) {
-            reloadQueries();
-            taskSchedulerService.run();
+            resume();
         } else {
-            queries = CommonUtils.parseQueries(queriesEditorPane.getText());
-            ConnectionConfig dbConfig = getConnectionConfig();
-            QueryConfig sqlConfig = getSqlBatchConfig();
-            TaskConfig taskConfig = getTaskConfig();
-            Progress progress = getProgress();
-            if (validate(dbConfig, sqlConfig, taskConfig)) {
-                configurationService.save(dbConfig, sqlConfig, taskConfig, progress);
-                taskSchedulerService.run();
-            }
+            start();
         }
     }//GEN-LAST:event_runButtonActionPerformed
 
-    private void reloadQueries() {
+    private void start() {
         queries = CommonUtils.parseQueries(queriesEditorPane.getText());
-        QueryConfig sqlBatchConfig = (QueryConfig) configurationService.get(QueryConfig.class);
-        sqlBatchConfig.setQueries(queries);
+        ConnectionConfig dbConfig = getConnectionConfig();
+        QueryConfig sqlConfig = getSqlBatchConfig();
+        TaskConfig taskConfig = getTaskConfig();
+        Progress progress = getProgress();
+        run(dbConfig, sqlConfig, progress, taskConfig);
+    }
+
+    private void resume() {
+        ConnectionConfig dbConfig = getConnectionConfig();
+        queries = CommonUtils.parseQueries(queriesEditorPane.getText());
+        QueryConfig sqlConfig = (QueryConfig) configurationService.get(QueryConfig.class);
+        sqlConfig.setQueries(queries);
         Progress progress = (Progress) configurationService.get(Progress.class);
         progress.setTotalCount(queries.size() + progress.getFinishedCount());
-        configurationService.save(sqlBatchConfig, progress);
+        TaskConfig taskConfig = getTaskConfig();
+        run(dbConfig, sqlConfig, progress, taskConfig);
+    }
+
+    private void run(ConnectionConfig dbConfig, QueryConfig sqlConfig, Progress progress, TaskConfig taskConfig) {
+        if (validate(dbConfig, sqlConfig, taskConfig)) {
+            configurationService.save(dbConfig, sqlConfig, taskConfig, progress);
+            taskSchedulerService.run();
+        }
     }
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
@@ -477,7 +538,6 @@ public class MainFrame extends JFrame {
         String newQueries = oldQueries.replaceFirst(regex, "");
         queriesEditorPane.setText(newQueries);
     }
-
 
     @EventListener
     public void handleProgressChangedEvent(final ProgressChangedEvent event) {
@@ -568,9 +628,14 @@ public class MainFrame extends JFrame {
     }
 
     private void loadQueriesFromConfig() {
-        QueryConfig sqlBatchConfig = ((QueryConfig) configurationService.get(QueryConfig.class));
-        String queries = CommonUtils.convertCollectionToString(sqlBatchConfig.getQueries(), "\r\n", ";");
-        queriesEditorPane.setText(queries);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                QueryConfig sqlBatchConfig = ((QueryConfig) configurationService.get(QueryConfig.class));
+                String queries = CommonUtils.convertCollectionToString(sqlBatchConfig.getQueries(), "\r\n", ";");
+                queriesEditorPane.setText(queries);
+            }
+        });
     }
 
     public void setRunning(boolean running) {
@@ -582,35 +647,6 @@ public class MainFrame extends JFrame {
             stopButton.setEnabled(false);
         }
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel batchSizeLabel;
-    private javax.swing.JSpinner batchSizeSpinner;
-    private javax.swing.JButton chooseFileButton;
-    private javax.swing.JPanel configurationPanel;
-    private javax.swing.JPanel connectionPanel;
-    private javax.swing.JComboBox driverComboBox;
-    private javax.swing.JLabel driverLabel;
-    private javax.swing.JPanel editQueriesPanel;
-    private javax.swing.JFileChooser fileChooser;
-    private javax.swing.JTextField filePathField;
-    private javax.swing.JLabel filePathLabel;
-    private javax.swing.JLabel intervalLabel;
-    private javax.swing.JSpinner intervalSpinner;
-    private javax.swing.JPanel loadQueriesPanel;
-    private javax.swing.JTextField loginField;
-    private javax.swing.JProgressBar mainProgressBar;
-    private javax.swing.JPasswordField passwordField;
-    private javax.swing.JLabel passwordLabel;
-    private javax.swing.JPanel progressPanel;
-    private javax.swing.JEditorPane queriesEditorPane;
-    private javax.swing.JScrollPane queriesScrollPane;
-    private javax.swing.JButton runButton;
-    private javax.swing.JButton stopButton;
-    private javax.swing.JButton testConnectionButton;
-    private javax.swing.JTextField urlField;
-    private javax.swing.JLabel urlLabel;
-    private javax.swing.JLabel usernameLabel;
 
     // End of variables declaration//GEN-END:variables
 }
